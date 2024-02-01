@@ -1,0 +1,61 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.nav-links {
+  display: flex; /* Use flexbox to layout links */
+  justify-content: center; /* Center items horizontally */
+  align-items: center; /* Center items vertically */
+  gap: 20px; /* Add space between each link */
+  padding: 10px 0; /* Add some padding above and below the nav bar */
+  list-style: none; /* Remove list styling if you use ul/li */
+  margin-bottom: 20px; /* Add some margin below the nav bar */
+}
+
+.nav-links a {
+  text-decoration: none; /* Remove underlines from links */
+  color: #4169E1; /* Color for your links */
+  font-weight: bold; /* Make the text bold */
+  padding: 5px 10px; /* Add padding around the text */
+  transition: color 0.3s; /* Smooth transition for hover effect */
+}
+
+.nav-links a:hover {
+  color: #333; /* Color when hovering over the link */
+}
+

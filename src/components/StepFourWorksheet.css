@@ -1,0 +1,36 @@
+.worksheet {
+    font-family: 'Arial', sans-serif;
+    margin: 20px;
+}
+
+.entry-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.entry-table th, .entry-table td {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: left;
+}
+
+.entry-table th {
+    background-color: #ccc;
+}
+
+/* Additional CSS for top-level headers to make them stand out */
+.top-level-header {
+    background-color: #333; /* Darker background for contrast */
+    color: #4169E1; /* White text for readability */
+    font-size: 1.1em; /* Slightly larger font size */
+    font-weight: bold; /* Bold font weight */
+    text-align: center; /* Center text alignment */
+}
+
+.mid-level-header {
+    background-color: #333; /* Darker background for contrast */
+    color: #ef5252; /* White text for readability */
+    font-size: 1.1em; /* Slightly larger font size */
+    font-weight: bold; /* Bold font weight */
+    text-align: center; /* Center text alignment */
+}
