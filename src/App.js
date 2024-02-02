@@ -18,10 +18,10 @@ function App() {
         <Link to="/harm-to-others">Harm to Others</Link>
       </nav>
       <Routes>
-        <Route path="/resentments" element={<Resentments />} />
-        <Route path="/fear" element={<Fear />} />
-        <Route path="/sex-conduct" element={<SexConduct />} />
-        <Route path="/harm-to-others" element={<HarmToOthers />} />
+        <Route path="/resentments" element={<Resentments storageKey="resentmentsEntries" />} />
+        <Route path="/fear" element={<Fear storageKey="fearEntries" />} />
+        <Route path="/sex-conduct" element={<SexConduct storageKey="sexConductEntries" />} />
+        <Route path="/harm-to-others" element={<HarmToOthers storageKey="harmToOthersEntries" />} />
       </Routes>
     </Router>
   );

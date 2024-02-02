@@ -6,6 +6,7 @@ function Resentments() {
     return (
         <StepFourWorksheet
             title="Review of Resentments"
+            storageKey="resentmentsEntries"
             columnOneLabel="I'm resentful at"
             columnTwoLabel="The cause"
         />

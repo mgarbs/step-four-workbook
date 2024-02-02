@@ -6,8 +6,9 @@ function HarmToOthers() {
     return (
         <StepFourWorksheet
             title="Review of Harms Other Than Sexual"
-            columnOneLabel="I'm fearful of"
-            columnTwoLabel="Why do I have the fear?"
+            storageKey="harmToOthersEntries"
+            columnOneLabel="Who did I harm?"
+            columnTwoLabel="What did I do?"
         />
     );
 }

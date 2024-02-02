@@ -1,49 +1,189 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
 import './StepFourWorksheet.css';
 
 const initialEntry = {
     columnOne: '',
     columnTwo: '',
     selfEsteem: false,
+    personalRelationships: false,
+    material: false,
+    emotional: false,
+    social: false,
     security: false,
-    sexRelations: false,
-    ambitions: false,
+    sexual: false,
+    acceptableSexRelations: false,
+    hiddenSexRelations: false,
     selfish: false,
     dishonest: false,
     inconsiderate: false,
     frightened: false,
     myPart: '',
 };
+//Self-Esteem	Personal Relationships	Material	Emotional	Acceptable Sex Relations	Hidden Sex Relations	Social	Security	Sexual	Selfish	Dishonest	Self-seeking & frightened	Inconsiderate
 
-function StepFourWorksheet({ title }) {
-    const [entries, setEntries] = useState([initialEntry]);
+const API_BASE_URL = 'http://localhost:3001/api';
+
+function StepFourWorksheet({ title, columnOneLabel, columnTwoLabel, storageKey }) {
+    const [entries, setEntries] = useState(
+        () => JSON.parse(localStorage.getItem(storageKey)) || [initialEntry]
+    );
+
+    const adjustAllTextAreaHeights = () => {
+        document.querySelectorAll('.textarea-autosize').forEach((textarea) => {
+            textarea.style.height = 'inherit';
+            textarea.style.height = `${textarea.scrollHeight}px`;
+        });
+    };
+
+
+    useEffect(() => {
+        localStorage.setItem(storageKey, JSON.stringify(entries));
+    }, [entries, storageKey]);
+
+    useEffect(() => {
+        const fetchEntries = async () => {
+            try {
+                const { data } = await axios.get(`${API_BASE_URL}/entries?category=${storageKey}`);
+                setEntries(data.length > 0 ? data : [{ ...initialEntry, category: storageKey }]);
+                if (data.length > 0) {
+                    setEntries(data);
+                    adjustAllTextAreaHeights();
+                } else {
+                    setEntries([{ ...initialEntry, category: storageKey }]);
+                }
+            } catch (error) {
+                console.error('Error fetching entries:', error);
+            }
+        };
+
+        fetchEntries();
+
+    }, [storageKey]);
+
+    function debounce(func, wait) {
+        let timeout;
+
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    const debouncedUpdateEntry = useRef(debounce(async (id, updatedEntry) => {
+        try {
+            await axios.patch(`${API_BASE_URL}/entries/${id}`, updatedEntry);
+        } catch (error) {
+            console.error('Error updating entry:', error);
+        }
+    }, 500)).current; // 500ms delay
+
+
 
 
     const handleEntryChange = (index, field, value) => {
-        const newEntries = [...entries];
-        newEntries[index] = { ...newEntries[index], [field]: value };
-        setEntries(newEntries);
+        let newEntries = [...entries];
+        let entry = { ...newEntries[index], [field]: value };
+
+        // Check if the entry is new and needs to be saved
+        if (!entry._id) {
+            // Only save if there's some content
+            if (value.trim() !== '') {
+                // Save the new entry immediately
+                saveNewEntry(index, entry);
+            }
+        } else {
+            // Existing entry, update it
+            newEntries[index] = entry;
+            setEntries(newEntries);
+            debouncedUpdateEntry(entry._id, { [field]: value });
+        }
+    };
+
+    const saveNewEntry = async (index, entry) => {
+        try {
+            const response = await axios.post(`${API_BASE_URL}/entries`, {
+                ...entry,
+                category: storageKey
+            });
+            let newEntries = [...entries];
+            newEntries[index] = response.data;
+            setEntries(newEntries);
+        } catch (error) {
+            console.error('Error saving new entry:', error);
+        }
+    };
+
+
+    const handleTextAreaInput = (e) => {
+        e.target.style.height = 'inherit';
+        e.target.style.height = `${e.target.scrollHeight}px`;
     };
 
     const handleCheckboxChange = (index, field) => {
-        const newEntries = [...entries];
-        newEntries[index] = { ...newEntries[index], [field]: !newEntries[index][field] };
+        let newEntries = [...entries];
+        let entry = { ...newEntries[index], [field]: !newEntries[index][field] };
+        newEntries[index] = entry;
         setEntries(newEntries);
+
+        if (entry._id) {
+            debouncedUpdateEntry(entry._id, { [field]: entry[field] });
+        }
     };
 
-    const addNewRow = () => {
-        setEntries([...entries, { ...initialEntry }]);
+
+
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();  // Prevent the default action to avoid submitting the form
+            addNewRow();
+        }
     };
+
+    const addNewRow = async () => {
+        const newEntryWithCategory = { ...initialEntry, category: storageKey };
+        try {
+            const response = await axios.post(`${API_BASE_URL}/entries`, newEntryWithCategory);
+            const updatedEntries = [...entries, response.data];
+            setEntries(updatedEntries);
+            setTimeout(() => {
+                lastRowRef.current?.focus();
+            }, 0);
+            adjustAllTextAreaHeights();
+        } catch (error) {
+            console.error('Error adding new entry:', error);
+        }
+    };
+
+    const deleteRow = async (index) => {
+        try {
+            const entry = entries[index];
+            await axios.delete(`${API_BASE_URL}/entries/${entry._id}`);
+            const newEntries = [...entries];
+            newEntries.splice(index, 1);
+            setEntries(newEntries);
+        } catch (error) {
+            console.error('Error deleting entry:', error);
+        }
+    };
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Implement the submission logic here, such as saving to a database or sending to a server
-        console.log(title, entries);
     };
+
+    const lastRowRef = useRef(null);
+
 
     return (
         <div className="worksheet">
-            <h2>{title}</h2>
+            <h1>{title}</h1>
             <div className="instructions">
                 {/* Add all instructions here as text */}
             </div>
@@ -51,17 +191,17 @@ function StepFourWorksheet({ title }) {
                 <table className="entry-table">
                     <thead>
                         <tr>
-                            <th rowspan="3" className="top-level-header">Column 1</th>
-                            <th rowspan="3" className="top-level-header">Column 2</th>
-                            <th colspan="9" className="top-level-header">Affects my</th>
-                            <th rowspan="2" colspan="4" className="top-level-header">What is the Exact Nature of My Wrongs, faults, mistakes, defects, shortcomings</th>
-                            <th rowspan="3" className="top-level-header">What was MY PART in all this? What did I do initially to get the ball rolling? How could I have done things differently?</th>
+                            <th rowSpan="3" className="top-level-header">Column 1</th>
+                            <th rowSpan="3" className="top-level-header">Column 2</th>
+                            <th colSpan="9" className="top-level-header">Affects my</th>
+                            <th rowSpan="2" colSpan="4" className="top-level-header">What is the Exact Nature of My Wrongs, faults, mistakes, defects, shortcomings</th>
+                            <th rowSpan="3" className="top-level-header">What was MY PART in all this? What did I do initially to get the ball rolling? How could I have done things differently?</th>
                         </tr>
                         <tr>
-                            <th colspan="2" className="mid-level-header">Social Instinct</th>
-                            <th colspan="2" className="mid-level-header">Security Instinct</th>
-                            <th colspan="2" className="mid-level-header">Sex Instinct</th>
-                            <th colspan="3" className="mid-level-header">Ambitions</th>
+                            <th colSpan="2" className="mid-level-header">Social Instinct</th>
+                            <th colSpan="2" className="mid-level-header">Security Instinct</th>
+                            <th colSpan="2" className="mid-level-header">Sex Instinct</th>
+                            <th colSpan="3" className="mid-level-header">Ambitions</th>
                         </tr>
                         <tr>
                             <th>Self-Esteem</th>
@@ -84,78 +224,83 @@ function StepFourWorksheet({ title }) {
                             <tr key={index}>
                                 <td>
                                     <input
+                                        className="column-one-input"
                                         type="text"
-                                        placeholder="I'm resentful at"
+                                        placeholder={columnOneLabel}
                                         value={entry.columnOne}
+                                        ref={index === entries.length - 1 ? lastRowRef : null}
                                         onChange={(e) => handleEntryChange(index, 'columnOne', e.target.value)}
+                                        onKeyDown={handleKeyDown}
                                     />
                                 </td>
                                 <td>
-                                    <input
-                                        type="text"
-                                        placeholder="The cause"
+                                    <textarea
+                                        className="textarea-autosize"
                                         value={entry.columnTwo}
+                                        onInput={handleTextAreaInput}
                                         onChange={(e) => handleEntryChange(index, 'columnTwo', e.target.value)}
+                                        placeholder={columnTwoLabel}
+                                        onKeyDown={handleKeyDown}
                                     />
                                 </td>
                                 {/* Render checkboxes for each "Affects my" field */}
-                                <td>
+                                <td className="custom-checkbox">
                                     <input
                                         type="checkbox"
                                         checked={entry.selfEsteem}
                                         onChange={() => handleCheckboxChange(index, 'selfEsteem')}
                                     />
                                 </td>
-                                <td>
+                                <td className="custom-checkbox">
                                     <input
                                         type="checkbox"
                                         checked={entry.personalRelationships}
                                         onChange={() => handleCheckboxChange(index, 'personalRelationships')}
                                     />
                                 </td>
-                                <td>
+                                <td className="custom-checkbox">
                                     <input
                                         type="checkbox"
                                         checked={entry.material}
                                         onChange={() => handleCheckboxChange(index, 'material')}
                                     />
                                 </td>
-                                <td>
+                                <td className="custom-checkbox">
                                     <input
                                         type="checkbox"
                                         checked={entry.emotional}
                                         onChange={() => handleCheckboxChange(index, 'emotional')}
                                     />
                                 </td>
-                                <td>
+                                <td className="custom-checkbox">
                                     <input
                                         type="checkbox"
                                         checked={entry.acceptableSexRelations}
                                         onChange={() => handleCheckboxChange(index, 'acceptableSexRelations')}
                                     />
                                 </td>
-                                <td>
+                                <td className="custom-checkbox">
                                     <input
                                         type="checkbox"
                                         checked={entry.hiddenSexRelations}
                                         onChange={() => handleCheckboxChange(index, 'hiddenSexRelations')}
                                     />
                                 </td>
-                                <td>
+                                <td className="custom-checkbox">
                                     <input
                                         type="checkbox"
                                         checked={entry.social}
                                         onChange={() => handleCheckboxChange(index, 'social')}
                                     />
                                 </td>
-                                <td>
+                                <td className="custom-checkbox">
                                     <input
                                         type="checkbox"
                                         checked={entry.security}
                                         onChange={() => handleCheckboxChange(index, 'security')}
                                     />
                                 </td>
-                                <td>
+                                <td className="custom-checkbox">
                                     <input
                                         type="checkbox"
                                         checked={entry.sexual}
@@ -164,28 +309,28 @@ function StepFourWorksheet({ title }) {
                                 </td>
                                 {/* ... */}
                                 {/* Render checkboxes for each "Nature of My Wrongs" field */}
-                                <td>
+                                <td className="custom-checkbox">
                                     <input
                                         type="checkbox"
                                         checked={entry.selfish}
                                         onChange={() => handleCheckboxChange(index, 'selfish')}
                                     />
                                 </td>
-                                <td>
+                                <td className="custom-checkbox">
                                     <input
                                         type="checkbox"
                                         checked={entry.dishonest}
                                         onChange={() => handleCheckboxChange(index, 'dishonest')}
                                     />
                                 </td>
-                                <td>
+                                <td className="custom-checkbox">
                                     <input
                                         type="checkbox"
                                         checked={entry.frightened}
                                         onChange={() => handleCheckboxChange(index, 'frightened')}
                                     />
                                 </td>
-                                <td>
+                                <td className="custom-checkbox">
                                     <input
                                         type="checkbox"
                                         checked={entry.inconsiderate}
@@ -194,19 +339,23 @@ function StepFourWorksheet({ title }) {
                                 </td>
                                 {/*5th column */}
                                 <td>
-                                    <input
-                                        type="text"
-                                        placeholder="My part in this"
+                                    <textarea
+                                        className="textarea-autosize"
                                         value={entry.myPart}
+                                        onInput={handleTextAreaInput}
                                         onChange={(e) => handleEntryChange(index, 'myPart', e.target.value)}
+                                        onKeyDown={handleKeyDown}
+                                        placeholder="My part in this"
                                     />
+                                </td>
+                                <td>
+                                    <button type="button" className="delete-row-button" onClick={() => deleteRow(index)}>x</button>
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
-                <button type="button" onClick={addNewRow}>Add New Row</button>
-                <button type="submit">Save {title}</button>
+                <button type="button" className="add-new-row-button " onClick={addNewRow}>Add New Row</button>
             </form>
         </div >
     );

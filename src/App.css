@@ -49,6 +49,7 @@
 
 .nav-links a {
   text-decoration: none; /* Remove underlines from links */
+  font-size: 1.4em;
   color: #4169E1; /* Color for your links */
   font-weight: bold; /* Make the text bold */
   padding: 5px 10px; /* Add padding around the text */

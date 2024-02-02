@@ -6,6 +6,7 @@ function Fears() {
     return (
         <StepFourWorksheet
             title="Review of Fears"
+            storageKey="fearEntries"
             columnOneLabel="I'm fearful of"
             columnTwoLabel="Why do I have the fear?"
         />

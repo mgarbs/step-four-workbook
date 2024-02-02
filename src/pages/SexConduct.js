@@ -6,6 +6,7 @@ function SexConduct() {
     return (
         <StepFourWorksheet
             title="Review of Our Own Sex Conduct"
+            storageKey="sexConductEntries"
             columnOneLabel="Who did I harm?"
             columnTwoLabel="What did I do?"
         />

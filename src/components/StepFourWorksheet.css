@@ -8,7 +8,8 @@
     border-collapse: collapse;
 }
 
-.entry-table th, .entry-table td {
+.entry-table th,
+.entry-table td {
     border: 1px solid black;
     padding: 8px;
     text-align: left;
@@ -18,19 +19,141 @@
     background-color: #ccc;
 }
 
-/* Additional CSS for top-level headers to make them stand out */
 .top-level-header {
-    background-color: #333; /* Darker background for contrast */
-    color: #4169E1; /* White text for readability */
-    font-size: 1.1em; /* Slightly larger font size */
-    font-weight: bold; /* Bold font weight */
-    text-align: center; /* Center text alignment */
+    background-color: #333;
+    color: #4169E1;
+    font-size: 1.3em;
+    font-weight: bold;
+    text-align: center;
 }
 
 .mid-level-header {
-    background-color: #333; /* Darker background for contrast */
-    color: #ef5252; /* White text for readability */
-    font-size: 1.1em; /* Slightly larger font size */
-    font-weight: bold; /* Bold font weight */
-    text-align: center; /* Center text alignment */
+    background-color: #333;
+    color: #ef5252;
+    font-size: 1.2em;
+    font-weight: bold;
+    text-align: center;
+}
+
+.textarea-autosize {
+    overflow-y: hidden;
+    min-height: 50px;
+    resize: none;
+    box-sizing: border-box;
+    font-size: 1.4em;
+    border: none;
+    outline: none;
+}
+
+.textarea-autosize::-webkit-scrollbar {
+    display: none;
+}
+
+.textarea-autosize {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.custom-checkbox {
+    width: 20px;
+    height: 20px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.custom-checkbox input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 25px;
+    height: 25px;
+    margin: 0;
+    background-color: #f2f2f2;
+    border: 2px solid #cccccc;
+    border-radius: 4px;
+    position: relative;
+}
+
+.custom-checkbox input[type="checkbox"]:checked {
+    background-color: #4169e1;
+    border-color: #4169e1;
+}
+
+.custom-checkbox input[type="checkbox"]:checked:after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 6px;
+    height: 12px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+}
+
+.custom-checkbox label {
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    font-size: 22px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.column-one-input {
+    font-size: 1.4em;
+    border: none;
+    outline: none;
+}
+
+.column-one-input::placeholder {
+    color: #888;
+}
+
+.column-one-input:focus {
+    background-color: #fff;
+}
+
+.entry-table .column-one-cell {
+    padding: 0;
+}
+
+
+button {
+    background-color: #4169E1;
+    color: white;
+    border: none; 
+    padding: 10px 20px;
+    margin: 10px; 
+    border-radius: 5px; 
+    cursor: pointer; 
+    transition: background-color 0.3s, transform 0.3s; 
+    font-size: 1em; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
+}
+
+button:hover {
+    background-color: #3658A4; 
+    transform: translateY(-2px); 
+}
+
+button:active {
+    background-color: #2B3E70; 
+    transform: translateY(1px); 
+}
+
+
+.add-new-row-button {
+    background-color: #4CAF50;
+   
+}
+
+
+.delete-row-button {
+    padding: 5px 10px;
+    background-color: #FF6347;
 }
