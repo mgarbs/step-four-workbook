@@ -24,7 +24,7 @@ const initialEntry = {
 
 const API_BASE_URL = 'http://localhost:3001/api';
 
-function StepFourWorksheet({ title, columnOneLabel, columnTwoLabel, storageKey }) {
+function StepFourWorksheet({ title, columnOneLabel, columnTwoLabel, storageKey, instructions }) {
 
     const [headerHeights, setHeaderHeights] = useState({
         topLevel: 75,   // Set your default heights that worked for you here
@@ -64,7 +64,7 @@ function StepFourWorksheet({ title, columnOneLabel, columnTwoLabel, storageKey }
         return () => {
             window.removeEventListener('resize', updateHeaderHeights);
         };
-    }, []); 
+    }, []);
 
 
     const [entries, setEntries] = useState(
@@ -227,7 +227,7 @@ function StepFourWorksheet({ title, columnOneLabel, columnTwoLabel, storageKey }
         <div className="worksheet">
             <h1>{title}</h1>
             <div className="instructions">
-                {/* Add all instructions here as text */}
+                {instructions}
             </div>
             <form onSubmit={handleSubmit}>
                 <div style={{
