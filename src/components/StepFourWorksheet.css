@@ -13,10 +13,14 @@
     border: 1px solid black;
     padding: 8px;
     text-align: left;
+    background: white;
 }
 
-.entry-table th {
+.entry-table thead th {
     background-color: #ccc;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 .top-level-header {
@@ -25,6 +29,9 @@
     font-size: 1.3em;
     font-weight: bold;
     text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 .mid-level-header {
@@ -33,6 +40,41 @@
     font-size: 1.2em;
     font-weight: bold;
     text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+.entry-table th.lowest-level-header {
+    writing-mode: vertical-lr;
+    transform: rotate(180deg);
+    white-space: nowrap;
+    padding: 5px 1px;
+    height: auto;
+    min-height: 110px;
+    vertical-align: bottom;
+    line-height: 1;
+    margin-left: -10px;
+    margin-right: -10px;
+    position: sticky;
+    z-index: 1;
+
+}
+
+.entry-table th.lowest-level-header {
+    transform-origin: center;
+}
+
+.entry-table thead th.top-level-header {
+    top: var(--topLevelHeaderHeight);
+}
+
+.entry-table thead th.mid-level-header {
+    top: var(--midLevelHeaderHeight);
+}
+
+.entry-table thead th.lowest-level-header {
+    top: var(--lowestLevelHeaderHeight);
 }
 
 .textarea-autosize {
@@ -98,9 +140,6 @@
     margin-bottom: 20px;
     cursor: pointer;
     font-size: 22px;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
 }
 
@@ -122,36 +161,32 @@
     padding: 0;
 }
 
-
 button {
     background-color: #4169E1;
     color: white;
-    border: none; 
+    border: none;
     padding: 10px 20px;
-    margin: 10px; 
-    border-radius: 5px; 
-    cursor: pointer; 
-    transition: background-color 0.3s, transform 0.3s; 
-    font-size: 1em; 
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
+    margin: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+    font-size: 1em;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 button:hover {
-    background-color: #3658A4; 
-    transform: translateY(-2px); 
+    background-color: #3658A4;
+    transform: translateY(-2px);
 }
 
 button:active {
-    background-color: #2B3E70; 
-    transform: translateY(1px); 
+    background-color: #2B3E70;
+    transform: translateY(1px);
 }
-
 
 .add-new-row-button {
     background-color: #4CAF50;
-   
 }
-
 
 .delete-row-button {
     padding: 5px 10px;

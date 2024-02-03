@@ -25,6 +25,48 @@ const initialEntry = {
 const API_BASE_URL = 'http://localhost:3001/api';
 
 function StepFourWorksheet({ title, columnOneLabel, columnTwoLabel, storageKey }) {
+
+    const [headerHeights, setHeaderHeights] = useState({
+        topLevel: 75,   // Set your default heights that worked for you here
+        midLevel: 149,
+        lowestLevel: 258,
+    });
+
+    const headerRefs = {
+        topLevel: useRef(null),
+        midLevel: useRef(null),
+        lowestLevel: useRef(null),
+    };
+
+    // This function will be defined within your component
+    const updateHeaderHeights = () => {
+        const topLevelHeight = headerRefs.topLevel.current?.offsetHeight || 0;
+        const midLevelHeight = headerRefs.midLevel.current?.offsetHeight || 0;
+
+        // Adjust 'top' for mid-level header, it should be just below the top-level header
+        if (headerRefs.midLevel.current) {
+            headerRefs.midLevel.current.style.top = `${topLevelHeight}px`;
+        }
+
+        // For lowest-level header, it's cumulative: the height of top-level plus mid-level headers
+        if (headerRefs.lowestLevel.current) {
+            headerRefs.lowestLevel.current.style.top = `${topLevelHeight + midLevelHeight}px`;
+        }
+    };
+
+    // Effect for setting up and cleaning up the event listener for window resize
+    useEffect(() => {
+        window.addEventListener('resize', updateHeaderHeights);
+        // Call it initially to set up the correct heights
+        updateHeaderHeights();
+
+        // Cleanup function to remove the event listener
+        return () => {
+            window.removeEventListener('resize', updateHeaderHeights);
+        };
+    }, []); 
+
+
     const [entries, setEntries] = useState(
         () => JSON.parse(localStorage.getItem(storageKey)) || [initialEntry]
     );
@@ -188,173 +230,179 @@ function StepFourWorksheet({ title, columnOneLabel, columnTwoLabel, storageKey }
                 {/* Add all instructions here as text */}
             </div>
             <form onSubmit={handleSubmit}>
-                <table className="entry-table">
-                    <thead>
-                        <tr>
-                            <th rowSpan="3" className="top-level-header">Column 1</th>
-                            <th rowSpan="3" className="top-level-header">Column 2</th>
-                            <th colSpan="9" className="top-level-header">Affects my</th>
-                            <th rowSpan="2" colSpan="4" className="top-level-header">What is the Exact Nature of My Wrongs, faults, mistakes, defects, shortcomings</th>
-                            <th rowSpan="3" className="top-level-header">What was MY PART in all this? What did I do initially to get the ball rolling? How could I have done things differently?</th>
-                        </tr>
-                        <tr>
-                            <th colSpan="2" className="mid-level-header">Social Instinct</th>
-                            <th colSpan="2" className="mid-level-header">Security Instinct</th>
-                            <th colSpan="2" className="mid-level-header">Sex Instinct</th>
-                            <th colSpan="3" className="mid-level-header">Ambitions</th>
-                        </tr>
-                        <tr>
-                            <th>Self-Esteem</th>
-                            <th>Personal Relationships</th>
-                            <th>Material</th>
-                            <th>Emotional</th>
-                            <th>Acceptable Sex Relations</th>
-                            <th>Hidden Sex Relations</th>
-                            <th>Social</th>
-                            <th>Security</th>
-                            <th>Sexual</th>
-                            <th>Selfish</th>
-                            <th>Dishonest</th>
-                            <th>Self-seeking & frightened</th>
-                            <th>Inconsiderate</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {entries.map((entry, index) => (
-                            <tr key={index}>
-                                <td>
-                                    <input
-                                        className="column-one-input"
-                                        type="text"
-                                        placeholder={columnOneLabel}
-                                        value={entry.columnOne}
-                                        ref={index === entries.length - 1 ? lastRowRef : null}
-                                        onChange={(e) => handleEntryChange(index, 'columnOne', e.target.value)}
-                                        onKeyDown={handleKeyDown}
-                                    />
-                                </td>
-                                <td>
-                                    <textarea
-                                        className="textarea-autosize"
-                                        value={entry.columnTwo}
-                                        onInput={handleTextAreaInput}
-                                        onChange={(e) => handleEntryChange(index, 'columnTwo', e.target.value)}
-                                        placeholder={columnTwoLabel}
-                                        onKeyDown={handleKeyDown}
-                                    />
-                                </td>
-                                {/* Render checkboxes for each "Affects my" field */}
-                                <td className="custom-checkbox">
-                                    <input
-                                        type="checkbox"
-                                        checked={entry.selfEsteem}
-                                        onChange={() => handleCheckboxChange(index, 'selfEsteem')}
-                                    />
-                                </td>
-                                <td className="custom-checkbox">
-                                    <input
-                                        type="checkbox"
-                                        checked={entry.personalRelationships}
-                                        onChange={() => handleCheckboxChange(index, 'personalRelationships')}
-                                    />
-                                </td>
-                                <td className="custom-checkbox">
-                                    <input
-                                        type="checkbox"
-                                        checked={entry.material}
-                                        onChange={() => handleCheckboxChange(index, 'material')}
-                                    />
-                                </td>
-                                <td className="custom-checkbox">
-                                    <input
-                                        type="checkbox"
-                                        checked={entry.emotional}
-                                        onChange={() => handleCheckboxChange(index, 'emotional')}
-                                    />
-                                </td>
-                                <td className="custom-checkbox">
-                                    <input
-                                        type="checkbox"
-                                        checked={entry.acceptableSexRelations}
-                                        onChange={() => handleCheckboxChange(index, 'acceptableSexRelations')}
-                                    />
-                                </td>
-                                <td className="custom-checkbox">
-                                    <input
-                                        type="checkbox"
-                                        checked={entry.hiddenSexRelations}
-                                        onChange={() => handleCheckboxChange(index, 'hiddenSexRelations')}
-                                    />
-                                </td>
-                                <td className="custom-checkbox">
-                                    <input
-                                        type="checkbox"
-                                        checked={entry.social}
-                                        onChange={() => handleCheckboxChange(index, 'social')}
-                                    />
-                                </td>
-                                <td className="custom-checkbox">
-                                    <input
-                                        type="checkbox"
-                                        checked={entry.security}
-                                        onChange={() => handleCheckboxChange(index, 'security')}
-                                    />
-                                </td>
-                                <td className="custom-checkbox">
-                                    <input
-                                        type="checkbox"
-                                        checked={entry.sexual}
-                                        onChange={() => handleCheckboxChange(index, 'sexual')}
-                                    />
-                                </td>
-                                {/* ... */}
-                                {/* Render checkboxes for each "Nature of My Wrongs" field */}
-                                <td className="custom-checkbox">
-                                    <input
-                                        type="checkbox"
-                                        checked={entry.selfish}
-                                        onChange={() => handleCheckboxChange(index, 'selfish')}
-                                    />
-                                </td>
-                                <td className="custom-checkbox">
-                                    <input
-                                        type="checkbox"
-                                        checked={entry.dishonest}
-                                        onChange={() => handleCheckboxChange(index, 'dishonest')}
-                                    />
-                                </td>
-                                <td className="custom-checkbox">
-                                    <input
-                                        type="checkbox"
-                                        checked={entry.frightened}
-                                        onChange={() => handleCheckboxChange(index, 'frightened')}
-                                    />
-                                </td>
-                                <td className="custom-checkbox">
-                                    <input
-                                        type="checkbox"
-                                        checked={entry.inconsiderate}
-                                        onChange={() => handleCheckboxChange(index, 'inconsiderate')}
-                                    />
-                                </td>
-                                {/*5th column */}
-                                <td>
-                                    <textarea
-                                        className="textarea-autosize"
-                                        value={entry.myPart}
-                                        onInput={handleTextAreaInput}
-                                        onChange={(e) => handleEntryChange(index, 'myPart', e.target.value)}
-                                        onKeyDown={handleKeyDown}
-                                        placeholder="My part in this"
-                                    />
-                                </td>
-                                <td>
-                                    <button type="button" className="delete-row-button" onClick={() => deleteRow(index)}>x</button>
-                                </td>
+                <div style={{
+                    '--topLevelHeaderHeight': `${headerHeights.topLevel}px`,
+                    '--midLevelHeaderHeight': `${headerHeights.midLevel}px`,
+                    '--lowestLevelHeaderHeight': `${headerHeights.lowestLevel}px`,
+                }}>
+                    <table className="entry-table">
+                        <thead>
+                            <tr ref={headerRefs.topLevel}>
+                                <th rowSpan="3" className="top-level-header">Column 1</th>
+                                <th rowSpan="3" className="top-level-header">Column 2</th>
+                                <th colSpan="9" rowSpan="1" className="top-level-header">Affects my</th>
+                                <th rowSpan="2" colSpan="4" className="top-level-header">What is the Exact Nature of My Wrongs, faults, mistakes, defects, shortcomings</th>
+                                <th rowSpan="3" colSpan="1" className="top-level-header">What was MY PART in all this? What did I do initially to get the ball rolling? How could I have done things differently?</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                            <tr ref={headerRefs.midLevel}>
+                                <th colSpan="2" className="mid-level-header">Social Instinct</th>
+                                <th colSpan="2" className="mid-level-header">Security Instinct</th>
+                                <th colSpan="2" className="mid-level-header">Sex Instinct</th>
+                                <th colSpan="3" className="mid-level-header">Ambitions</th>
+                            </tr>
+                            <tr ref={headerRefs.lowestLevel}>
+                                <th className='lowest-level-header'>Self-Esteem</th>
+                                <th className='lowest-level-header'>Personal Relationships</th>
+                                <th className='lowest-level-header'>Material</th>
+                                <th className='lowest-level-header'>Emotional</th>
+                                <th className='lowest-level-header'>Acceptable Sex Relations</th>
+                                <th className='lowest-level-header'>Hidden Sex Relations</th>
+                                <th className='lowest-level-header'>Social</th>
+                                <th className='lowest-level-header'>Security</th>
+                                <th className='lowest-level-header'>Sexual</th>
+                                <th className='lowest-level-header'>Selfish</th>
+                                <th className='lowest-level-header'>Dishonest</th>
+                                <th className='lowest-level-header'>Self-seeking & frightened</th>
+                                <th className='lowest-level-header'>Inconsiderate</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {entries.map((entry, index) => (
+                                <tr key={index}>
+                                    <td>
+                                        <input
+                                            className="column-one-input"
+                                            type="text"
+                                            placeholder={columnOneLabel}
+                                            value={entry.columnOne}
+                                            ref={index === entries.length - 1 ? lastRowRef : null}
+                                            onChange={(e) => handleEntryChange(index, 'columnOne', e.target.value)}
+                                            onKeyDown={handleKeyDown}
+                                        />
+                                    </td>
+                                    <td>
+                                        <textarea
+                                            className="textarea-autosize"
+                                            value={entry.columnTwo}
+                                            onInput={handleTextAreaInput}
+                                            onChange={(e) => handleEntryChange(index, 'columnTwo', e.target.value)}
+                                            placeholder={columnTwoLabel}
+                                            onKeyDown={handleKeyDown}
+                                        />
+                                    </td>
+                                    {/* Render checkboxes for each "Affects my" field */}
+                                    <td className="custom-checkbox">
+                                        <input
+                                            type="checkbox"
+                                            checked={entry.selfEsteem}
+                                            onChange={() => handleCheckboxChange(index, 'selfEsteem')}
+                                        />
+                                    </td>
+                                    <td className="custom-checkbox">
+                                        <input
+                                            type="checkbox"
+                                            checked={entry.personalRelationships}
+                                            onChange={() => handleCheckboxChange(index, 'personalRelationships')}
+                                        />
+                                    </td>
+                                    <td className="custom-checkbox">
+                                        <input
+                                            type="checkbox"
+                                            checked={entry.material}
+                                            onChange={() => handleCheckboxChange(index, 'material')}
+                                        />
+                                    </td>
+                                    <td className="custom-checkbox">
+                                        <input
+                                            type="checkbox"
+                                            checked={entry.emotional}
+                                            onChange={() => handleCheckboxChange(index, 'emotional')}
+                                        />
+                                    </td>
+                                    <td className="custom-checkbox">
+                                        <input
+                                            type="checkbox"
+                                            checked={entry.acceptableSexRelations}
+                                            onChange={() => handleCheckboxChange(index, 'acceptableSexRelations')}
+                                        />
+                                    </td>
+                                    <td className="custom-checkbox">
+                                        <input
+                                            type="checkbox"
+                                            checked={entry.hiddenSexRelations}
+                                            onChange={() => handleCheckboxChange(index, 'hiddenSexRelations')}
+                                        />
+                                    </td>
+                                    <td className="custom-checkbox">
+                                        <input
+                                            type="checkbox"
+                                            checked={entry.social}
+                                            onChange={() => handleCheckboxChange(index, 'social')}
+                                        />
+                                    </td>
+                                    <td className="custom-checkbox">
+                                        <input
+                                            type="checkbox"
+                                            checked={entry.security}
+                                            onChange={() => handleCheckboxChange(index, 'security')}
+                                        />
+                                    </td>
+                                    <td className="custom-checkbox">
+                                        <input
+                                            type="checkbox"
+                                            checked={entry.sexual}
+                                            onChange={() => handleCheckboxChange(index, 'sexual')}
+                                        />
+                                    </td>
+                                    {/* ... */}
+                                    {/* Render checkboxes for each "Nature of My Wrongs" field */}
+                                    <td className="custom-checkbox">
+                                        <input
+                                            type="checkbox"
+                                            checked={entry.selfish}
+                                            onChange={() => handleCheckboxChange(index, 'selfish')}
+                                        />
+                                    </td>
+                                    <td className="custom-checkbox">
+                                        <input
+                                            type="checkbox"
+                                            checked={entry.dishonest}
+                                            onChange={() => handleCheckboxChange(index, 'dishonest')}
+                                        />
+                                    </td>
+                                    <td className="custom-checkbox">
+                                        <input
+                                            type="checkbox"
+                                            checked={entry.frightened}
+                                            onChange={() => handleCheckboxChange(index, 'frightened')}
+                                        />
+                                    </td>
+                                    <td className="custom-checkbox">
+                                        <input
+                                            type="checkbox"
+                                            checked={entry.inconsiderate}
+                                            onChange={() => handleCheckboxChange(index, 'inconsiderate')}
+                                        />
+                                    </td>
+                                    {/*5th column */}
+                                    <td>
+                                        <textarea
+                                            className="textarea-autosize"
+                                            value={entry.myPart}
+                                            onInput={handleTextAreaInput}
+                                            onChange={(e) => handleEntryChange(index, 'myPart', e.target.value)}
+                                            onKeyDown={handleKeyDown}
+                                            placeholder="My part in this"
+                                        />
+                                    </td>
+                                    <td>
+                                        <button type="button" className="delete-row-button" onClick={() => deleteRow(index)}>x</button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
                 <button type="button" className="add-new-row-button " onClick={addNewRow}>Add New Row</button>
             </form>
         </div >
