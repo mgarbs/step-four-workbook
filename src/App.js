@@ -13,7 +13,7 @@ function App() {
     <Router>
       <nav className="nav-links">
         <Link to="/resentments">Resentments</Link>
-        <Link to="/fear">Fear</Link>
+        <Link to="/fear">Fears</Link>
         <Link to="/sex-conduct">Sex Conduct</Link>
         <Link to="/harm-to-others">Harm to Others</Link>
       </nav>
