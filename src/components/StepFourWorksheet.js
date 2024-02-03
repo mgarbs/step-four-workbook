@@ -28,8 +28,8 @@ function StepFourWorksheet({ title, columnOneLabel, columnTwoLabel, storageKey }
 
     const [headerHeights, setHeaderHeights] = useState({
         topLevel: 75,   // Set your default heights that worked for you here
-        midLevel: 149,
-        lowestLevel: 258,
+        midLevel: 147.5,
+        lowestLevel: 257,
     });
 
     const headerRefs = {
