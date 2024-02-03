@@ -79,4 +79,4 @@ For support, please check the [issues tab](https://github.com/mgarbs/step-four-w
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
