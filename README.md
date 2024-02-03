@@ -20,7 +20,7 @@ If you don't have a MongoDB URI, get one online at [MongoDB Atlas](https://www.m
 1. Navigate to the `server` directory from your project root:
 
 ```bash
-cd root/server
+cd server
 ```
 
 2. Install the necessary dependencies:
